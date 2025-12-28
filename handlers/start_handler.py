@@ -9,6 +9,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import User
+from utils.scheduler import schedule_weekly_message
 
 router = Router()
 
@@ -95,6 +96,7 @@ async def set_birth_date(message: Message, state: FSMContext, session: AsyncSess
         .values(last_message_id=final_message.message_id)
     )
     await session.commit()
+    schedule_weekly_message(message.bot, telegram_id)
     await state.clear()
 
 def register_handlers(dp):
